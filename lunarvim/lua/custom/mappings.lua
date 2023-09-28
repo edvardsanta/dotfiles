@@ -16,5 +16,4 @@ M.dap = {
   ["<F12>"] = "<cmd>lua require('dap').step_out()<cr>",
   ["<leader>B"] = "<cmd>lua require('dap').toggle_breakpoint()<cr>",
 }
-
 return M

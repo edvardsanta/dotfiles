@@ -1,4 +1,5 @@
 local dap = require("dap")
+
 dap.adapters.mix_task = {
   type = 'executable',
   command = vim.fn.stdpath("data") .. '/mason/packages/elixir-ls/debugger.sh',

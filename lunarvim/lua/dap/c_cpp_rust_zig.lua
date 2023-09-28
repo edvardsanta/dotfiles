@@ -1,7 +1,7 @@
 ---@diagnostic disable: redundant-parameter
 local dap = require("dap")
 
-
+-- TODO move these builds to utils
 local function build_rust()
   vim.fn.jobstart("cargo build", {
     on_exit = function(_, _)
@@ -44,6 +44,10 @@ dap.adapters.codelldb = {
 }
 
 
+local path = vim.fn.getcwd() .. "/.vscode/launch.json"
+print(path)
+require('dap.ext.vscode').load_launchjs(path, { codelldb = { 'rust' } })
+
 dap.configurations.rust = {
   {
     name = "Launch file",
@@ -52,6 +56,22 @@ dap.configurations.rust = {
     request = "launch",
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopAtEntry = false,
+  },
+  {
+    name = "Launch file with args",
+    type = "codelldb",
+    preLaunchTask = build_rust(),
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/', 'file')
+    end,
+    args = function()
+      local arg = vim.fn.input("Args: ")
+      local list = require("utils.split").split(arg)
+      return list
     end,
     cwd = '${workspaceFolder}',
     stopAtEntry = false,
@@ -67,6 +87,22 @@ dap.configurations.zig = {
     request = "launch",
     program = function()
       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/zig-out', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopAtEntry = false,
+  },
+  {
+    name = "Launch file with args",
+    type = "codelldb",
+    preLaunchTask = build_zig(),
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/zig-out', 'file')
+    end,
+    args = function()
+      local arg = vim.fn.input("Args: ")
+      local list = require("utils.split").split(arg)
+      return list
     end,
     cwd = '${workspaceFolder}',
     stopAtEntry = false,
