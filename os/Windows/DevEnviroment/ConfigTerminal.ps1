@@ -48,6 +48,7 @@ oh-my-posh init pwsh | Invoke-Expression
 "@
     
         Add-Content -Path $profilePath -Value $poshInit
+        Write-Host "Oh my posh installed"
     }
     else {
         Write-Host "ohMyPOSH won´t be installed"
@@ -70,9 +71,21 @@ function  Get-NerdFonts {
             $iterator++
         }
     }
-    $choice = Read-Host "What do you want to install? Write the number"
-    	
-    New-Item -Path "$env:USERPROFILE" -Name "NerdFonts" -ItemType Directory
-    Invoke-WebRequest -Uri $myArray[$choice]   -OutFile "$env:USERPROFILE\NerdFonts"
-  
+    [int]$choice = Read-Host "What do you want to install? Write the number"
+    if ($choice -gt $myArray.Count -OR $choice -lt 1){
+        Write-Host "Wrong choice. Cannot install nerd fonts"
+        return
+    }
+    $currentDir = Get-Location
+    $urlChoosed = $myArray[$choice - 1]
+    $fileNameWithExtension = $urlChoosed.Split("/")[-1]
+    $fileName = $fileNameWithExtension -replace "[.zip]", ""
+    $pathName = "$currentDir\NerdFonts"
+    $fileNamePath = "$pathName\$fileNameWithExtension"
+    New-Item -Path $currentDir -Name "NerdFonts" -ItemType Directory
+    New-Item -Path $pathName -Name "$fileName" -ItemType Directory
+    Invoke-WebRequest -Uri $urlChoosed -OutFile $fileNamePath
+
+    Expand-Archive -LiteralPath $fileNamePath -DestinationPath "$pathName\$fileName\"
 }
+
